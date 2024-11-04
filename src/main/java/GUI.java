@@ -1,36 +1,48 @@
-
+import java.awt.*;
+import java.util.ArrayList;
 import javax.swing.*;
-        import java.awt.*;
-        import java.util.ArrayList;
+
 
 public class GUI {
-    public static void main(String[] args) {
-        ArrayList<String> words = new ArrayList<>();
-        words.add("Haus");
-        words.add("Baum");
-        words.add("Auto");
+    public static void main(String[] arg) {
+        ArrayList<Paar> list = new ArrayList<>();
+        Worttrainer worttrainer = new Worttrainer(list);
+        Laden laden = new Laden();
+        worttrainer = laden.strategy(worttrainer);
+        list = worttrainer.getList();
+        boolean weiter = true;
 
-        boolean continueTraining = true;
+        String eingabe = "";
+        while(weiter && !list.isEmpty()) {
+            for (int i = 0; i < list.size(); i++) {
+                ImageIcon icon = new ImageIcon(list.get(i).getBild());
+                while (icon.getIconWidth() > 300 || icon.getIconHeight() > 300) {
+                    Image image = icon.getImage();
+                    Image newimg = image.getScaledInstance((int) (icon.getIconWidth() / 1.5), (int) (icon.getIconHeight() / 1.5), java.awt.Image.SCALE_SMOOTH);
+                    icon = new ImageIcon(newimg);
+                }
 
-        while (continueTraining && !words.isEmpty()) {
-            for (int i = 0; i < words.size(); i++) {
-                String input = JOptionPane.showInputDialog(null, "Geben Sie das Wort ein: " + words.get(i), "Worttrainer", JOptionPane.PLAIN_MESSAGE);
+                JLabel label = new JLabel(icon);
+                eingabe = JOptionPane.showInputDialog(null, label, "Worttrainer", JOptionPane.PLAIN_MESSAGE);
 
-                if (input == null || input.isEmpty()) {
-                    continueTraining = false;
+                if (eingabe == null || eingabe.equals("")) {
+                    weiter = false;
                     break;
                 }
 
-                if (input.equalsIgnoreCase(words.get(i))) {
-                    JOptionPane.showMessageDialog(null, "Das war richtig!");
-                    words.remove(i);
+                boolean richtig = list.get(i).checkWord(eingabe);
+                worttrainer.addTry(richtig);
+                JOptionPane.showMessageDialog(null, "Das war " + (richtig ? "richtig!" : "falsch!"));
+
+                if (richtig) {
+                    list.remove(i);
                     i--;
-                } else {
-                    JOptionPane.showMessageDialog(null, "Das war falsch!");
                 }
             }
         }
 
-        JOptionPane.showMessageDialog(null, "Training beendet. Verbleibende Wörter: " + words.size());
+        JOptionPane.showMessageDialog(null,"Statistik: " + worttrainer.getVersuche() + " Versuche, " + worttrainer.getGeschafft() + " davon sind richtig.");
+        Speichern speichern = new Speichern();
+        speichern.strategy(worttrainer);
     }
 }
