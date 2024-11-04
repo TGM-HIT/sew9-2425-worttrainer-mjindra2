@@ -13,7 +13,13 @@ public class Speichern implements SuL{
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
-        return null;
+        try {
+            objectMapper.writeValue(new File("worttrainer.json"), worttrainer);
+            return worttrainer;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
 
