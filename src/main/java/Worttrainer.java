@@ -20,5 +20,24 @@ public class Worttrainer{
         versuche = 0;
     }
 
+    public void addTry(boolean geschafft){
+        versuche++;
+        if(geschafft){
+            this.geschafft++;
+        }
+    }
+
+    @JsonIgnore
+    public ArrayList<Paar> getList(){
+        return paare;
+    }
+
+    public int getVersuche(){
+        return this.versuche;
+    }
+
+    public int getGeschafft(){
+        return this.geschafft;
+    }
 }
 
